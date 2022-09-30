@@ -96,29 +96,3 @@ void SendBumper(int bumper)
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send bumper: 0x%x", bumper);
 }
-
-void GameServerSendTask(void* parameter)
-{
-  BaseType_t xStatus;
-  uint8_t data = 0;
-  
-  for (;;)
-  {
-    // Serial.println("GameServer Send Task");
-    // xStatus = xQueueReceive(xQueueBumper, &data, 100);
-    // if(xStatus == pdPASS)
-    // {
-    //   SendBumper(data);
-    //   log_i("receive queue: 0x%x", data);
-    // }
-    // xStatus = xQueueReceive(xQueueBattery, &data, 100);
-    // if(xStatus == pdPASS)
-    // {
-    //   SendBattery(data);
-    //   log_i("receive queue: %d%", data);
-    // }
-
-    vTaskDelay(100);
-  }
-  vTaskDelete(NULL);
-}

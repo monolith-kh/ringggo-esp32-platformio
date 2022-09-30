@@ -7,8 +7,6 @@ void BatteryInit()
 
     g_fBatteryVolt = 0;
     g_dBatteryValue = 0;
-
-    xQueueBattery = xQueueCreate(5, sizeof(uint8_t));
 }
 
 void BatteryTask(void* parameter)
@@ -81,7 +79,6 @@ void BatteryTask(void* parameter)
     {
       l_dDispCount = 0;
       log_i("AD: %d, Voltage: %f, Percent: %d", l_udBatteryADValue, g_fBatteryVolt, g_dBatteryValue);
-      // xStatus = xQueueSendToFront(xQueueBattery, &g_dBatteryValue, 100);
       SendBattery(g_dBatteryValue);
     }
     

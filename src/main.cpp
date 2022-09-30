@@ -12,8 +12,7 @@
 #include "bumper.h"
 #include "gameserver.h"
 
-// xQueueHandle xQueueLed, xQueueMp3;
-xQueueHandle xQueueLed, xQueueMp3, xQueueBumper, xQueueBattery;
+xQueueHandle xQueueLed, xQueueMp3;
 CRGB leds[NUM_LEDS];
 DFRobotDFPlayerMini mp3Player;
 int volume;
@@ -83,14 +82,6 @@ void setup(void)
         NULL,                   // Task 파라미터
         9,                      // Task 우선순위
         NULL);                  // Task handle
-
-    // xTaskCreate(
-    //     GameServerSendTask,         // Task 함수 이름
-    //     "GameServerSendTask",       // Task 이름
-    //     10000,                  // Task 스택 크기
-    //     NULL,                   // Task 파라미터
-    //     9,                      // Task 우선순위
-    //     NULL);                  // Task handle
 
     xTaskCreate(
         BumperTask,

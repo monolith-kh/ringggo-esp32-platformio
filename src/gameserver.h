@@ -24,6 +24,5 @@ void GameServerTask(void* parameter);
 void SendBattery(uint8_t percentage);
 void SendNfc(char wrbId[], uint8_t uid[]);
 void SendBumper(int bumper);
-void GameServerSendTask(void* parameter);
 
 #endif

@@ -15,8 +15,6 @@
 #define RIGHT   0x04
 #define REAR    0x08
 
-extern xQueueHandle xQueueBumper;
-
 void BumperTask(void* parameter);
 
 #endif

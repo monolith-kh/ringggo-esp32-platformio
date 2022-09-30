@@ -10,11 +10,8 @@
 
 #define BATTERY_DELAY       60
 
-
-extern xQueueHandle xQueueBattery;
 extern float g_fBatteryVolt;
 extern uint8_t g_dBatteryValue;
-
 
 void BatteryInit();
 void BatteryTask(void* parameter);

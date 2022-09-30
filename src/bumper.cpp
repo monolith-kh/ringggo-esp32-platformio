@@ -16,8 +16,6 @@ void BumperTask(void* parameter)
     pinMode(BMP_SEN_RIGHT, INPUT);
     pinMode(BMP_SEN_REAR, INPUT);
 
-    xQueueBumper = xQueueCreate(10, sizeof(uint8_t));
-
     for (;;)
     {
 
@@ -44,11 +42,6 @@ void BumperTask(void* parameter)
 
         if(bumper && pressed)
         {
-            // xStatus = xQueueSendToFront(xQueueBumper, &bumper, 100);
-            // if(xStatus == pdPASS)
-            // {
-            //     log_i("send game server queue: %x", bumper);
-            // }
             SendBumper(bumper);
             bumper = 0;
             pressed = false;
