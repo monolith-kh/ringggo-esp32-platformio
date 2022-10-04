@@ -1,12 +1,9 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#define WIFI_SSID      "ringo-dev"
-#define WIFI_PASSWORD  "mono1010"
-
-
 #include <WiFi.h>
 #include <WiFiClient.h>
+#include "config.h"
 
 
 void WifiInit();

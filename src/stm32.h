@@ -4,10 +4,8 @@
 #include <SPI.h>
 #include <Arduino.h>
 #include "packet.h"
+#include "config.h"
 #include <WiFi.h>
-
-#define RTLS_HOST   "oldtrafford.ringggo.981park.net"
-#define RTLS_PORT   9999
 
 #define POSITION_X_MAX  1500
 #define POSITION_Y_MAX  2000

@@ -11,6 +11,8 @@
 #include "battery.h"
 #include "bumper.h"
 #include "gameserver.h"
+#include "config.h"
+
 
 xQueueHandle xQueueLed, xQueueMp3;
 CRGB leds[NUM_LEDS];

@@ -1,10 +1,6 @@
 #ifndef GAMESERVER_H
 #define GAMESERVER_H
 
-#define GAME_HOST   "manunited.ringggo.981park.net"
-// #define GAME_HOST   "192.168.41.254"
-#define GAME_PORT   9998
-
 #define STOP      0
 #define START     1
 #define SUSPEND   2
@@ -16,6 +12,7 @@
 #include "mp3.h"
 #include "bumper.h"
 #include "battery.h"
+#include "config.h"
 
 extern WiFiClient gameClient;
 

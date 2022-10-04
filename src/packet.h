@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#define CAR_ID  10
-
 /* reqCode on Protocol_t */
 #define PK_WHO_ARE_YOU_ANS			0x90
 #define PK_IAM_ANS					0x92
