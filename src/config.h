@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define CAR_ID  10
+#define VERSION "0.1.16"
 
 #ifdef DEV
     #define WIFI_SSID       "RINGGGO-dev"

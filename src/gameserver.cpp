@@ -31,12 +31,12 @@ void GameServerTask(void* parameter)
       
       if (packetHeader[0] == PK_WHO_ARE_YOU_ANS) {
         log_i("whoyouare received");
-        Protocol_t protocol = {PK_IAM_ANS, CAR, 8, CAR_ID, 0, };
+        Protocol_t protocol = {PK_IAM_ANS, CAR, 8, carNumber, 0, };
         gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
         log_i("send answer");
       } else if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
         log_i("check received");
-        Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, CAR_ID, 0, };
+        Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, carNumber, 0, };
         gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
         log_i("send answer");
       } else if (packetHeader[0] == PK_CARLED_NOTI) {
@@ -58,6 +58,7 @@ void GameServerTask(void* parameter)
       } else if (packetHeader[0] == PK_CARACTIVEMODE_NOTI) {
         gameClient.readBytes(packetBody, 1);
         log_i("car start/stop received: %d\n", packetBody[0]);
+        SetEventMode(packetBody[0]);
         // xStatus = xQueueSendToFront(xQueueSubBoard, packetBody, 100);
         // if(xStatus == pdPASS)
         // {
@@ -75,14 +76,14 @@ void GameServerTask(void* parameter)
 
 void SendBattery(uint8_t percentage)
 {
-    Protocol_bt protocol = {PK_BATTERY_NOTI, CAR, 8, CAR_ID, 0, percentage};
+    Protocol_bt protocol = {PK_BATTERY_NOTI, CAR, 8, carNumber, 0, percentage};
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send battery: %d%", percentage);
 }
 
 void SendNfc(char wrbId[], uint8_t uid[])
 {
-    Protocol_nfct protocol = {PK_NFC_NOTI, CAR, 8, CAR_ID, 0,};
+    Protocol_nfct protocol = {PK_NFC_NOTI, CAR, 8, carNumber, 0,};
     memcpy(protocol.wrbId, wrbId, 13);
     protocol.sep = ',';
     memcpy(protocol.uid, uid, 7);
@@ -92,7 +93,7 @@ void SendNfc(char wrbId[], uint8_t uid[])
 
 void SendBumper(int bumper)
 {
-    Protocol_bumpert protocol = {PK_BUMP_NOTI, CAR, 8, CAR_ID, 0, (uint8_t)bumper};
+    Protocol_bumpert protocol = {PK_BUMP_NOTI, CAR, 8, carNumber, 0, (uint8_t)bumper};
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send bumper: 0x%x", bumper);
 }

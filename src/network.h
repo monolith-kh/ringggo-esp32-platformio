@@ -5,6 +5,7 @@
 #include <WiFiClient.h>
 #include "config.h"
 
+extern char hostName[32];
 
 void WifiInit();
 void WifiTask(void* parameter);

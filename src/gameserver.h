@@ -12,9 +12,11 @@
 #include "mp3.h"
 #include "bumper.h"
 #include "battery.h"
+#include "stm32.h"
 #include "config.h"
 
 extern WiFiClient gameClient;
+extern uint8_t carNumber;
 
 void GameServerInit();
 void GameServerTask(void* parameter);

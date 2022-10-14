@@ -6,6 +6,8 @@ void WifiInit()
 
     // WiFi.setHostname(hostName);
 
+    WiFi.disconnect(true);
+    WiFi.setHostname(hostName);
     WiFi.mode(WIFI_STA);
     WiFi.onEvent(WiFiEvent);
     WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);

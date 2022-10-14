@@ -22,6 +22,9 @@ Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 float g_fBatteryVolt; 
 uint8_t g_dBatteryValue;
 WiFiClient gameClient;
+SPIClass* vspi;
+char hostName[32] = { 0, };
+uint8_t carNumber;
 
 
 void setup(void)
@@ -29,6 +32,14 @@ void setup(void)
     Serial.begin(115200);
 
     log_i("Hello RINGGGO");
+
+    Stm32Init();
+
+    carNumber = GetCarNumber();
+    log_i("Car Number: %d", carNumber);
+
+    sprintf(hostName, "CAR_%d(%s)", carNumber, VERSION);
+    log_i("hostname: %s", hostName);
 
     WifiInit();
 

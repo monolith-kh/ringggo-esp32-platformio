@@ -1,5 +1,6 @@
 #include "stm32.h"
 
+
 uint8_t spiCommand(SPIClass *spi, byte data) {
     uint8_t ret = 0;
     //use it as you would the regular arduino SPI API
@@ -51,21 +52,56 @@ void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_siz
 }
 
 
+uint8_t GetCarNumber()
+{
+    uint8_t data[SPI_MAX_DATASIZE] = {0, };
+    spi_response response;
+
+    spiStm32Command(vspi, SPI_CMD_CARNUM_GET, data, 0, &response);
+    spi_response_data_carnumber* car_number = (spi_response_data_carnumber*) response.data;
+    log_i("CarNumber: %d", car_number->carnumber);
+
+    return car_number->carnumber;
+}
+
+
+void SetEventMode(uint8_t mode)
+{
+    uint8_t data[SPI_MAX_DATASIZE] = {0, };
+    spi_response response;
+
+    if (mode == STOP) {
+        data[0] = EVENT_MANUAL_OFF;
+    } else if (mode ==START) {
+        data[0] = EVENT_REMOTE_ON;
+    } else {
+        log_i("wrong activation mode");
+    }
+
+    spiStm32Command(vspi, SPI_CMD_EVENT, data, 1, &response);
+    spi_response_data_event* event = (spi_response_data_event*) response.data;
+    log_i("event data: %d, %d", event->event, event->event_data);
+}
+
+
+void Stm32Init()
+{
+    //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
+    vspi = new SPIClass(VSPI);
+
+    //clock miso mosi ss
+    vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
+    pinMode(VSPI_SS, OUTPUT);
+}
+
+
 void Stm32Task(void* parameter)
 {
-    uint8_t ret = 0;
     uint8_t data[SPI_MAX_DATASIZE] = {0, };
     spi_response response;
 
     time_t t;
     WiFiUDP rtlsClient;
-
-    //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
-    SPIClass* vspi = new SPIClass(VSPI);
-
-    //clock miso mosi ss
-    vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
-    pinMode(VSPI_SS, OUTPUT);
 
     log_d("==========");
     log_d("Get Status");
@@ -83,21 +119,11 @@ void Stm32Task(void* parameter)
 
     for (;;)
     {
-        // ret = spiCommand(vspi, 0b01010101); // junk data to illustrate usage
-        // log_d("vspi-1: 0x%x", ret);
-        // vTaskDelay(100);
-
-        // ret = spiCommand(vspi, 0b10101010); // junk data to illustrate usage
-        // log_d("vspi-2: 0x%x", ret);
-        // vTaskDelay(100);
-
-
-
         spiStm32Command(vspi, SPI_CMD_LOCATION_GET, data, 0, &response);
         spi_response_data_location* location = (spi_response_data_location*) response.data;
 
         rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
-        Protocol_position_t protocol = { PK_POSITION_NOTI, CAR_ID, 22, 13, 0, };
+        Protocol_position_t protocol = { PK_POSITION_NOTI, carNumber, 22, 13, 0, };
         t = time(NULL);
         protocol.timestamp = (int64_t)t;
         protocol.positionX = location->pos_x;
