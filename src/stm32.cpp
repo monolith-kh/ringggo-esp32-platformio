@@ -73,7 +73,7 @@ void SetEventMode(uint8_t mode)
     if (mode == STOP) {
         data[0] = EVENT_MANUAL_OFF;
     } else if (mode ==START) {
-        data[0] = EVENT_REMOTE_ON;
+        data[0] = EVENT_MANUAL_ON;
     } else {
         log_i("wrong activation mode");
     }
