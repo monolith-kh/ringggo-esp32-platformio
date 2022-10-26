@@ -27,6 +27,8 @@ WiFiClient gameClient;
 SPIClass* vspi;
 char hostName[32] = { 0, };
 uint8_t carNumber;
+unsigned long currentTime;
+unsigned long healthcheckTime;
 
 
 void setup(void)
@@ -37,8 +39,12 @@ void setup(void)
 
     Stm32Init();
 
-    carNumber = GetCarNumber();
-    log_i("Car Number: %d", carNumber);
+    carNumber = 0;
+    while(carNumber == 0)
+    {
+        carNumber = GetCarNumber();
+        log_i("Car Number: %d", carNumber);
+    }
 
 #ifdef DEV
     sprintf(hostName, "CAR_%d(%s)DEV", carNumber, VERSION);
