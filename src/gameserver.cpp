@@ -43,6 +43,27 @@ void GameServerInit()
 
   log_i("connected GameServer");
   gameClient.setNoDelay(true);
+
+
+  log_i("try to handshake");
+  uint8_t packetHeader[8] = { 0, };
+  uint8_t packetBody[8] = { 0, };
+
+  gameClient.readBytes(packetHeader, 8);
+  log_i("%x %x %x %x %x %x %x %x ", packetHeader[0], packetHeader[1], packetHeader[2], packetHeader[3], packetHeader[4], packetHeader[5], packetHeader[6], packetHeader[7]);
+
+  if (packetHeader[0] == PK_WHO_ARE_YOU_ANS) {
+    log_i("whoyouare received");
+    Protocol_t protocol = {PK_IAM_ANS, CAR, 8, carNumber, 0, };
+    gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
+    log_i("send answer");
+    healthcheckTime = millis();
+  } else {
+    log_i("wrong handshake process");
+    log_i("retry GameServerInit");
+    gameClient.stop();
+    GameServerInit();
+  }
 }
 
 void GameServerTask(void* parameter)
@@ -68,13 +89,7 @@ void GameServerTask(void* parameter)
       gameClient.readBytes(packetHeader, 8);
       log_i("%x %x %x %x %x %x %x %x ", packetHeader[0], packetHeader[1], packetHeader[2], packetHeader[3], packetHeader[4], packetHeader[5], packetHeader[6], packetHeader[7]);
       
-      if (packetHeader[0] == PK_WHO_ARE_YOU_ANS) {
-        healthcheckTime = currentTime;
-        log_i("whoyouare received");
-        Protocol_t protocol = {PK_IAM_ANS, CAR, 8, carNumber, 0, };
-        gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
-        log_i("send answer");
-      } else if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
+      if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
         healthcheckTime = currentTime;
         log_i("check received");
         Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, carNumber, 0, };
