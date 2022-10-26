@@ -123,7 +123,7 @@ void Mp3Task(void* parameter)
       }
     }
 
-    vTaskDelay(1000);
+    vTaskDelay(100);
 
   }
   vTaskDelete(NULL);
