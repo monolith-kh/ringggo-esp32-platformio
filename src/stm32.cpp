@@ -123,7 +123,7 @@ void Stm32Task(void* parameter)
         spi_response_data_location* location = (spi_response_data_location*) response.data;
 
         rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
-        Protocol_position_t protocol = { PK_POSITION_NOTI, carNumber, 22, 13, 0, };
+        Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 22, carNumber, 0, };
         t = time(NULL);
         protocol.timestamp = (int64_t)t;
         protocol.positionX = location->pos_x;
