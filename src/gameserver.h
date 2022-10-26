@@ -6,6 +6,8 @@
 #define SUSPEND   2
 #define RESUME    3
 
+#define RECONNECT_DELAY     10000
+
 #include <WiFiClient.h>
 #include "packet.h"
 #include "led.h"
@@ -17,6 +19,8 @@
 
 extern WiFiClient gameClient;
 extern uint8_t carNumber;
+extern unsigned long currentTime;
+extern unsigned long healthcheckTime;
 
 void GameServerInit();
 void GameServerTask(void* parameter);

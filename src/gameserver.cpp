@@ -4,9 +4,14 @@
 void GameServerInit()
 {
   log_i("Init GameServer");
+  currentTime = 0;
+  healthcheckTime = 0;
+
   if (!gameClient.connect(GAME_HOST, GAME_PORT))
   {
     log_i("connection failed");
+    log_i("restart ESP32");
+    ESP.restart();
     return;
   }
   log_i("connected GameServer");
@@ -24,17 +29,26 @@ void GameServerTask(void* parameter)
   
   for (;;)
   {
+    currentTime = millis();
+    log_i("current time: %lu", currentTime);
+    log_i("heathcheck time: %lu", healthcheckTime);
+    if((currentTime - healthcheckTime) >= RECONNECT_DELAY) {
+      gameClient.stop();
+      GameServerInit();
+    }
     while (gameClient.available())
     {
       gameClient.readBytes(packetHeader, 8);
       log_i("%x %x %x %x %x %x %x %x ", packetHeader[0], packetHeader[1], packetHeader[2], packetHeader[3], packetHeader[4], packetHeader[5], packetHeader[6], packetHeader[7]);
       
       if (packetHeader[0] == PK_WHO_ARE_YOU_ANS) {
+        healthcheckTime = currentTime;
         log_i("whoyouare received");
         Protocol_t protocol = {PK_IAM_ANS, CAR, 8, carNumber, 0, };
         gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
         log_i("send answer");
       } else if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
+        healthcheckTime = currentTime;
         log_i("check received");
         Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, carNumber, 0, };
         gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
@@ -68,7 +82,7 @@ void GameServerTask(void* parameter)
         log_i("invalid req code");
       }
     }
-    vTaskDelay(1000);
+    vTaskDelay(100);
 
   }
   vTaskDelete(NULL);
