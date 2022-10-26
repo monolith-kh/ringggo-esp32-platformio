@@ -1,19 +1,46 @@
 #include "gameserver.h"
 
+void sleep(int millis)
+{
+  const static int tick = 100;
+  int loop_count = millis / tick;
+  while (loop_count)
+  {
+    vTaskDelay(tick);
+    loop_count--;
+  }
+}
+
 
 void GameServerInit()
 {
+  const static int try_amount = 100;
+
   log_i("Init GameServer");
   currentTime = 0;
   healthcheckTime = 0;
 
-  if (!gameClient.connect(GAME_HOST, GAME_PORT))
+  float delay = 1.0;
+  int try_count = try_amount;
+
+  while (!gameClient.connect(GAME_HOST, GAME_PORT))
   {
-    log_i("connection failed");
-    log_i("restart ESP32");
-    ESP.restart();
-    return;
+    if (try_count)
+    {
+      log_i("connection failed %d of %d", try_count, try_amount);
+      log_i("try reconnect after %d seconds", int(delay));
+      sleep(int(delay));
+
+      try_count--;
+      delay *= 1.1;
+    } else {
+      log_i("tried over 100 times");
+      log_i("reset...");
+      ESP.restart();
+      return;
+    }
   }
+
   log_i("connected GameServer");
   gameClient.setNoDelay(true);
 }
@@ -111,3 +138,4 @@ void SendBumper(int bumper)
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send bumper: 0x%x", bumper);
 }
+
