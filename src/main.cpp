@@ -27,7 +27,6 @@ WiFiClient gameClient;
 SPIClass* vspi;
 char hostName[32] = { 0, };
 uint8_t carNumber;
-unsigned long currentTime;
 unsigned long healthcheckTime;
 
 
