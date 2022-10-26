@@ -95,6 +95,18 @@ void Stm32Init()
 }
 
 
+void Stm32Reset()
+{
+    log_i("Reset Stm32");
+    uint8_t data[SPI_MAX_DATASIZE] = {0, };
+    spi_response response;
+
+    spiStm32Command(vspi, SPI_CMD_RESET_GET, data, 0, &response);
+    spi_response_data_reset* reset = (spi_response_data_reset*) response.data;
+    log_i("reset data: %d", reset->reset);
+}
+
+
 void Stm32Task(void* parameter)
 {
     uint8_t data[SPI_MAX_DATASIZE] = {0, };

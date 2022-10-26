@@ -45,6 +45,7 @@ void setup(void)
         carNumber = GetCarNumber();
         log_i("Car Number: %d", carNumber);
     }
+    Stm32Reset();
 
 #ifdef DEV
     sprintf(hostName, "CAR_%d(%s)DEV", carNumber, VERSION);
@@ -101,12 +102,12 @@ void setup(void)
     );
 
     xTaskCreate(
-        GameServerTask,         // Task 함수 이름
-        "GameServerTask",       // Task 이름
-        10000,                  // Task 스택 크기
-        NULL,                   // Task 파라미터
-        9,                      // Task 우선순위
-        NULL);                  // Task handle
+        GameServerTask,
+        "GameServerTask",
+        10000,
+        NULL,
+        9,
+        NULL);
 
     xTaskCreate(
         BumperTask,

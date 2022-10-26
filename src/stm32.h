@@ -22,6 +22,7 @@
 #define SPI_CMD_REMOTE_SET      0x31
 #define SPI_CMD_LOCATION_GET    0x41
 #define SPI_CMD_CARNUM_GET      0x51
+#define SPI_CMD_RESET_GET       0x61
 
 #define EVENT_REMOTE_ON         0x00
 #define EVENT_REMOTE_OFF        0x01
@@ -72,6 +73,11 @@ typedef struct {
 
 #pragma pack(1)
 typedef struct {
+    uint8_t reset;
+} spi_response_data_reset;
+
+#pragma pack(1)
+typedef struct {
     uint16_t pos_x;
     uint16_t pos_y;
     uint16_t head_angle;
@@ -86,6 +92,7 @@ void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_siz
 uint8_t GetCarNumber();
 void SetEventMode(uint8_t mode);
 void Stm32Init();
+void Stm32Reset();
 void Stm32Task(void* parameter);
 
 #endif
