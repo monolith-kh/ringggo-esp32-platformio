@@ -28,6 +28,7 @@ SPIClass* vspi;
 char hostName[32] = { 0, };
 uint8_t carNumber;
 unsigned long healthcheckTime;
+uint32_t colorList[9];
 
 
 void setup(void)

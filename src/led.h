@@ -38,6 +38,8 @@
 
 extern CRGB leds[NUM_LEDS];
 
+extern uint32_t colorList[9];
+
 extern xQueueHandle xQueueLed;
 
 void LedInit();
