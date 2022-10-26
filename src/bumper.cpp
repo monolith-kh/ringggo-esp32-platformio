@@ -47,7 +47,7 @@ void BumperTask(void* parameter)
             pressed = false;
         }
         
-        vTaskDelay(200);
+        vTaskDelay(10);
     }
 
     vTaskDelete(NULL);
