@@ -17,8 +17,7 @@ void GameServerInit()
   const static int try_amount = 100;
 
   log_i("Init GameServer");
-  currentTime = 0;
-  healthcheckTime = 0;
+  healthcheckTime = millis();
 
   float delay = 1.0;
   int try_count = try_amount;
@@ -72,60 +71,63 @@ void GameServerTask(void* parameter)
 
   uint8_t packetHeader[8] = { 0, };
   uint8_t packetBody[8] = { 0, };
-
-  GameServerInit();
   
   for (;;)
   {
-    currentTime = millis();
-    log_i("current time: %lu", currentTime);
-    log_i("heathcheck time: %lu", healthcheckTime);
-    if((currentTime - healthcheckTime) >= RECONNECT_DELAY) {
-      gameClient.stop();
-      GameServerInit();
-    }
-    while (gameClient.available())
-    {
-      gameClient.readBytes(packetHeader, 8);
-      log_i("%x %x %x %x %x %x %x %x ", packetHeader[0], packetHeader[1], packetHeader[2], packetHeader[3], packetHeader[4], packetHeader[5], packetHeader[6], packetHeader[7]);
-      
-      if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
-        healthcheckTime = currentTime;
-        log_i("check received");
-        Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, carNumber, 0, };
-        gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
-        log_i("send answer");
-      } else if (packetHeader[0] == PK_CARLED_NOTI) {
-        gameClient.readBytes(packetBody, 7);
-        log_i("car led received: %d, %d, %d, %d, %d, %d, %d", packetBody[0], packetBody[1], packetBody[2], packetBody[3], packetBody[4], packetBody[5], packetBody[6]);
-        xStatus = xQueueSendToFront(xQueueLed, packetBody, 100);
-        if(xStatus == pdPASS)
-        {
-            log_i("led queue send");
-        }
-      } else if (packetHeader[0] == PK_CARSOUND_NOTI) {
-        gameClient.readBytes(packetBody, 2);
-        log_i("car sound received: %d, %d", packetBody[0], packetBody[1]);
-        xStatus = xQueueSendToFront(xQueueMp3, packetBody, 100);
-        if(xStatus == pdPASS)
-        {
-            log_i("mp3 queue send");
-        }
-      } else if (packetHeader[0] == PK_CARACTIVEMODE_NOTI) {
-        gameClient.readBytes(packetBody, 1);
-        log_i("car start/stop received: %d\n", packetBody[0]);
-        SetEventMode(packetBody[0]);
-        // xStatus = xQueueSendToFront(xQueueSubBoard, packetBody, 100);
-        // if(xStatus == pdPASS)
-        // {
-        //     log_i("subboard queue send");
-        // }
-      } else {
-        log_i("invalid req code");
-      }
-    }
-    vTaskDelay(100);
+    GameServerInit();
 
+    for (;;)
+    {
+      if ((millis() - healthcheckTime) > RECONNECT_DELAY)
+      {
+        log_i("health check failed");
+        log_i("%d %d", millis(), healthcheckTime);
+        gameClient.stop();
+        break;
+      }
+
+      while (gameClient.available())
+      {
+        gameClient.readBytes(packetHeader, 8);
+        log_i("%x %x %x %x %x %x %x %x ", packetHeader[0], packetHeader[1], packetHeader[2], packetHeader[3], packetHeader[4], packetHeader[5], packetHeader[6], packetHeader[7]);
+        healthcheckTime = millis();
+        
+        if (packetHeader[0] == PK_CHECK_CONNECTION_REQ) {
+          log_i("check received");
+          Protocol_t protocol = {PK_CHECK_CONNECTION_ANS, CAR, 8, carNumber, 0, };
+          gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
+          log_i("send answer");
+        } else if (packetHeader[0] == PK_CARLED_NOTI) {
+          gameClient.readBytes(packetBody, 7);
+          log_i("car led received: %d, %d, %d, %d, %d, %d, %d", packetBody[0], packetBody[1], packetBody[2], packetBody[3], packetBody[4], packetBody[5], packetBody[6]);
+          xStatus = xQueueSendToFront(xQueueLed, packetBody, 100);
+          if(xStatus == pdPASS)
+          {
+              log_i("led queue send");
+          }
+        } else if (packetHeader[0] == PK_CARSOUND_NOTI) {
+          gameClient.readBytes(packetBody, 2);
+          log_i("car sound received: %d, %d", packetBody[0], packetBody[1]);
+          xStatus = xQueueSendToFront(xQueueMp3, packetBody, 100);
+          if(xStatus == pdPASS)
+          {
+              log_i("mp3 queue send");
+          }
+        } else if (packetHeader[0] == PK_CARACTIVEMODE_NOTI) {
+          gameClient.readBytes(packetBody, 1);
+          log_i("car start/stop received: %d\n", packetBody[0]);
+          SetEventMode(packetBody[0]);
+          // xStatus = xQueueSendToFront(xQueueSubBoard, packetBody, 100);
+          // if(xStatus == pdPASS)
+          // {
+          //     log_i("subboard queue send");
+          // }
+        } else {
+          log_i("invalid req code");
+        }
+      }
+      vTaskDelay(100);
+    }
   }
   vTaskDelete(NULL);
 }
