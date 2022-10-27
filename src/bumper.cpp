@@ -7,9 +7,11 @@ void BumperTask(void* parameter)
 
     uint8_t bumper;
     bool pressed;
+    bool prevPressed;
 
     bumper = 0;
     pressed = false;
+    prevPressed = false;
 
     pinMode(BMP_SEN_FRONT, INPUT);
     pinMode(BMP_SEN_LEFT, INPUT);
@@ -18,23 +20,22 @@ void BumperTask(void* parameter)
 
     for (;;)
     {
-
-        if(digitalRead(BMP_SEN_FRONT) == LOW)
+        if(digitalRead(BMP_SEN_FRONT) == LOW && (prevPressed == false))
         {
             bumper |= FRONT;
             pressed = true;
         }
-        if(digitalRead(BMP_SEN_RIGHT) == LOW)
+        if(digitalRead(BMP_SEN_RIGHT) == LOW && (prevPressed == false))
         {
             bumper |= RIGHT;
             pressed = true;
         }
-        if(digitalRead(BMP_SEN_LEFT) == LOW)
+        if(digitalRead(BMP_SEN_LEFT) == LOW && (prevPressed == false))
         {
             bumper |= LEFT;
             pressed = true;
         }
-        if(digitalRead(BMP_SEN_REAR) == LOW)
+        if(digitalRead(BMP_SEN_REAR) == LOW && (prevPressed == false))
         {
             bumper |= REAR;
             pressed = true;
@@ -45,7 +46,9 @@ void BumperTask(void* parameter)
             SendBumper(bumper);
             bumper = 0;
             pressed = false;
+            prevPressed = false;
         }
+        prevPressed = pressed;
         
         vTaskDelay(10);
     }
