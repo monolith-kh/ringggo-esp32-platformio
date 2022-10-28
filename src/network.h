@@ -6,6 +6,7 @@
 #include "config.h"
 
 extern char hostName[32];
+extern uint8_t carNumber;
 
 void WifiInit();
 void WifiTask(void* parameter);

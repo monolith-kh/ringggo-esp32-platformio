@@ -4,10 +4,7 @@ void WifiInit()
 {
     log_i("Init Wifi");
 
-    // WiFi.setHostname(hostName);
-
     WiFi.disconnect(true);
-    WiFi.setHostname(hostName);
     WiFi.mode(WIFI_STA);
     WiFi.onEvent(WiFiEvent);
     WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
@@ -15,6 +12,16 @@ void WifiInit()
         log_w("WiFi lost connection. Reason: %d", info.wifi_sta_disconnected.reason);
         }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 
+
+    IPAddress localIp(192, 168, 40, 200 + carNumber);
+    IPAddress gateway(192, 168, 40, 1);
+    IPAddress subnet(255, 255, 255, 0);
+    IPAddress primaryDNS(1, 1, 1, 1);
+    IPAddress secondaryDNS(8, 8, 8, 8);
+    if(!WiFi.config(localIp, gateway, subnet, primaryDNS, secondaryDNS)) {
+        log_e("STA Failed to configure");
+    }
+    WiFi.setHostname(hostName);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
     while (WiFi.status() != WL_CONNECTED) {
