@@ -1,5 +1,5 @@
-#include <arduino.h>
-#include <wire.h>
+#include <Arduino.h>
+#include <Wire.h>
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 
