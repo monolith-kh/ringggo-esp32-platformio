@@ -38,6 +38,11 @@
 
 extern CRGB leds[NUM_LEDS];
 
+extern uint8_t ledIndex;
+extern uint8_t type;
+extern uint16_t ledTime;
+extern uint32_t color;
+
 extern uint32_t colorList[9];
 
 extern xQueueHandle xQueueLed;

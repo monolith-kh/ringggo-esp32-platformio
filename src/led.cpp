@@ -16,6 +16,11 @@ void LedInit()
     colorList[7] = COLOR_BLUE;
     colorList[8] = COLOR_AQUA;
 
+    ledIndex = LED_ALL;
+    type = LED_BLINK;
+    ledTime = 500;
+    color = COLOR_RINGGGO;
+
     FastLED.addLeds<P9813, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);  // BGR ordering is typical
 }
 
@@ -76,11 +81,6 @@ void LedTask(void* parameter)
 
     uint8_t packetBody[7] = { 0, };
 
-    uint8_t index = LED_ALL;
-    uint8_t type = LED_BLINK;
-    uint16_t ledTime = 500;
-    uint32_t color = COLOR_RINGGGO;
-
     LedInit();
   
     for (;;)
@@ -89,28 +89,28 @@ void LedTask(void* parameter)
         if(xStatus == pdPASS)
         {
             Serial.printf("led queue received: %d, %d, %d, %d, %d, %d, %d\n", packetBody[0], packetBody[1], packetBody[2], packetBody[3], packetBody[4], packetBody[5], packetBody[6]);
-            index = packetBody[0];
+            ledIndex = packetBody[0];
             type = packetBody[1];
             ledTime = (packetBody[2] | packetBody[3] << 8);
             color = RGB(packetBody[4], packetBody[5], packetBody[6]);
         }
         
         if(type == LED_OFF) {
-            LedOff(index);
+            LedOff(ledIndex);
         } else if(type == LED_ON) {
             if(ledTime >= 500)
             {
-                LedOn(index, color, ledTime);
+                LedOn(ledIndex, color, ledTime);
             }
             else
             {
-                LedOn(index, color);
+                LedOn(ledIndex, color);
             }
         } else if (type == LED_BLINK) {
-            Blink(index, color, ledTime);
+            Blink(ledIndex, color, ledTime);
             log_d("Blink leds");
         } else if (type == LED_BLINK_RANDOM) {
-            Blink(index, colorList[rand()%sizeof(colorList)], ledTime);
+            Blink(ledIndex, colorList[rand()%sizeof(colorList)], ledTime);
         } else {
             log_d("invalid led type");
         }
