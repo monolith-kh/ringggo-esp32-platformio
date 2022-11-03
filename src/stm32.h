@@ -11,9 +11,9 @@
 
 #define FETCH_UWB_DELAY     100
 #define SPI_SIGNAL_DELAY    50
-#define SPI_MAX_DATASIZE    8
+#define SPI_MAX_DATASIZE    10
 
-#define LOG_LEVEL_TRACE 1
+#define LOG_LEVEL_TRACE     1
 
 
 // Commands
@@ -80,6 +80,8 @@ typedef struct {
 typedef struct {
     uint16_t pos_x;
     uint16_t pos_y;
+    uint16_t acc_x;
+    uint16_t acc_y;
     uint16_t head_angle;
 } spi_response_data_location;
 

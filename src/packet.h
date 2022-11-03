@@ -69,6 +69,8 @@ typedef struct Protocol_position_t {
     int64_t timestamp;
     int16_t positionX;
     int16_t positionY;
+    int16_t accX;
+    int16_t accY;
     int16_t headAngle;
 } Protocol_position_t;
 

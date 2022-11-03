@@ -39,7 +39,7 @@ void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_siz
     spi->endTransaction();
 
     if (LOG_LEVEL_TRACE) {
-        log_d("Receive: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x", 
+        log_d("Receive: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x", 
             response->data[0], 
             response->data[1], 
             response->data[2], 
@@ -47,7 +47,9 @@ void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_siz
             response->data[4], 
             response->data[5], 
             response->data[6],
-            response->data[7]);
+            response->data[7],
+            response->data[8],
+            response->data[9]);
     }
 }
 
@@ -74,6 +76,10 @@ void SetEventMode(uint8_t mode)
         data[0] = EVENT_MANUAL_OFF;
     } else if (mode ==START) {
         data[0] = EVENT_MANUAL_ON;
+    } else if (mode == SUSPEND) {
+        data[0] = EVENT_SUSPEND;
+    } else if (mode == RESUME) {
+        data[0] = EVENT_RESUME;
     } else {
         log_i("wrong activation mode");
     }
@@ -135,11 +141,13 @@ void Stm32Task(void* parameter)
         spi_response_data_location* location = (spi_response_data_location*) response.data;
 
         rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
-        Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 22, carNumber, 0, };
-        t = time(NULL);
+        Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 26, carNumber, 0, };
+        t = millis();
         protocol.timestamp = (int64_t)t;
         protocol.positionX = location->pos_x;
         protocol.positionY = location->pos_y;
+        protocol.accX= location->acc_x;
+        protocol.accY= location->acc_y;
         protocol.headAngle = location->head_angle;
         rtlsClient.write((uint8_t *)&protocol, sizeof(protocol));
         rtlsClient.endPacket();
