@@ -6,6 +6,7 @@
 #define SUSPEND   2
 #define RESUME    3
 
+#define GAME_PLAYTIME       180000+10000
 #define RECONNECT_DELAY     10000
 
 #include <WiFiClient.h>
@@ -19,13 +20,16 @@
 
 extern WiFiClient gameClient;
 extern uint8_t carNumber;
-extern unsigned long currentTime;
+extern unsigned long gamePlayTime;
 extern unsigned long healthcheckTime;
+extern boolean inGame;
 
 void GameServerInit();
 void GameServerTask(void* parameter);
 void SendBattery(uint8_t percentage);
 void SendNfc(char wrbId[], uint8_t uid[]);
 void SendBumper(int bumper);
+void GameStart();
+void GameStop();
 
 #endif

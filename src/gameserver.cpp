@@ -18,6 +18,8 @@ void GameServerInit()
 
   log_i("Init GameServer");
   healthcheckTime = millis();
+  gamePlayTime = 0;
+  inGame = false;
 
   float delay = 1.0;
   int try_count = try_amount;
@@ -78,8 +80,7 @@ void GameServerTask(void* parameter)
 
     for (;;)
     {
-      if ((millis() - healthcheckTime) > RECONNECT_DELAY)
-      {
+      if ((millis() - healthcheckTime) > RECONNECT_DELAY) {
         log_i("health check failed");
         log_i("%d %d", millis(), healthcheckTime);
         gameClient.stop();
@@ -116,12 +117,13 @@ void GameServerTask(void* parameter)
         } else if (packetHeader[0] == PK_CARACTIVEMODE_NOTI) {
           gameClient.readBytes(packetBody, 1);
           log_i("car start/stop received: %d\n", packetBody[0]);
+          if(packetBody[0] == START) {
+            gamePlayTime = millis();
+            inGame = true;
+          } else if(packetBody[0] == STOP) {
+            inGame = false;
+          }
           SetEventMode(packetBody[0]);
-          // xStatus = xQueueSendToFront(xQueueSubBoard, packetBody, 100);
-          // if(xStatus == pdPASS)
-          // {
-          //     log_i("subboard queue send");
-          // }
         } else {
           log_i("invalid req code");
         }
@@ -156,3 +158,27 @@ void SendBumper(int bumper)
     log_i("send bumper: 0x%x", bumper);
 }
 
+void GameStart()
+{
+    log_i("game start");
+    gamePlayTime = millis();
+    inGame = true;
+    SetEventMode(START);
+    ledIndex = LED_ALL;
+    type = LED_ON;
+    color = COLOR_YELLOW;
+    ledTime = 1000;
+    Mp3Play(1);
+}
+
+void GameStop()
+{
+    log_i("game stop");
+    inGame = false;
+    SetEventMode(STOP);
+    ledIndex = LED_ALL;
+    type = LED_ON;
+    color = COLOR_WHITE;
+    ledTime = 1000;
+    Mp3Play(2);
+}
