@@ -13,6 +13,9 @@
 #define GET_NFC_DATA    1
 #define MAX_PACKET      32
 
+#define NFC_TICKET_START    "1111111111111"
+#define NFC_TICKET_FINISH   "0000000000000"
+
 extern Adafruit_PN532 nfc;
 
 void NfcInit();

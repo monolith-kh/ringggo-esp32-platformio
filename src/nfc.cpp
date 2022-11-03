@@ -70,14 +70,18 @@ void NfcTask(void* parameter)
                 nfc.PrintHexChar(data, 48);
                 Serial.println("");
 
-                // 그외 NDEF NFC는 고객테그로 간주하고 서버로 데이터 송신 
-//                g_udNFCFlag = 1;
                 Serial.println(l_arrID);
                 Serial.println((char *)l_arrID);
-                SendNfc((char *)l_arrID, (uint8_t *)uid);
-                // Mp3Effect(3);
-//                SendNFCData((char*)uid, l_arrID);
 
+                if(strcmp((const char*)l_arrID, (const char*)NFC_TICKET_START) == 0) {
+                    log_i("nfc ticket start");
+                    GameStart();
+                } else if(strcmp((const char*)l_arrID, (const char*)NFC_TICKET_FINISH) == 0) {
+                    log_i("nfc ticket finish");
+                    GameStop();
+                } else {
+                    SendNfc((char *)l_arrID, (uint8_t *)uid);
+                }
 
                 // Wait a bit before reading the card again
                 vTaskDelay(1000);
