@@ -28,8 +28,16 @@ SPIClass* vspi;
 char hostName[32] = { 0, };
 uint8_t carNumber;
 unsigned long healthcheckTime;
+unsigned long gamePlayTime;
+unsigned long nowTime;
+boolean inGame;
 uint32_t colorList[9];
 
+// led
+uint8_t ledIndex;
+uint8_t type;
+uint16_t ledTime;
+uint32_t color;
 
 void setup(void)
 {
@@ -170,4 +178,12 @@ void setup(void)
 void loop(void)
 {
     ArduinoOTA.handle();
+
+    nowTime = millis();
+    if (inGame && ((nowTime - gamePlayTime) > GAME_PLAYTIME)) {
+        log_i("stop game by timer(180 seconds)");
+        GameStop();
+    }
+    log_d("timestamp: %lu ms", nowTime);
+    vTaskDelay(1000);
 }
