@@ -1,55 +1,66 @@
 #include "bumper.h"
 
-
 void BumperTask(void* parameter)
 {
-    BaseType_t xStatus;
-
-    uint8_t bumper;
-    bool pressed;
-    bool prevPressed;
-
-    bumper = 0;
-    pressed = false;
-    prevPressed = false;
-
     pinMode(BMP_SEN_FRONT, INPUT);
     pinMode(BMP_SEN_LEFT, INPUT);
     pinMode(BMP_SEN_RIGHT, INPUT);
     pinMode(BMP_SEN_REAR, INPUT);
+    
+    uint8_t bumperFront = HIGH;
+    uint8_t bumperLeft = HIGH;
+    uint8_t bumperRight = HIGH;
+    uint8_t bumperRear = HIGH;
+
+    uint8_t prevBumperFront = HIGH;
+    uint8_t prevBumperLeft = HIGH;
+    uint8_t prevBumperRight = HIGH;
+    uint8_t prevBumperRear = HIGH;
+
+    uint8_t bumper = 0x00;
 
     for (;;)
     {
-        if(digitalRead(BMP_SEN_FRONT) == LOW && (prevPressed == false))
-        {
-            bumper |= FRONT;
-            pressed = true;
-        }
-        if(digitalRead(BMP_SEN_RIGHT) == LOW && (prevPressed == false))
-        {
-            bumper |= RIGHT;
-            pressed = true;
-        }
-        if(digitalRead(BMP_SEN_LEFT) == LOW && (prevPressed == false))
-        {
-            bumper |= LEFT;
-            pressed = true;
-        }
-        if(digitalRead(BMP_SEN_REAR) == LOW && (prevPressed == false))
-        {
-            bumper |= REAR;
-            pressed = true;
+        bumperFront = digitalRead(BMP_SEN_FRONT);
+        if(bumperFront == LOW) {
+            if(prevBumperFront == HIGH) {
+                SendBumper(FRONT);
+            }
+            prevBumperFront = bumperFront;
+        } else {
+            prevBumperFront = bumperFront;
         }
 
-        if(bumper && pressed)
-        {
-            SendBumper(bumper);
-            bumper = 0;
-            pressed = false;
-            prevPressed = false;
+        bumperLeft = digitalRead(BMP_SEN_LEFT);
+        if(bumperLeft == LOW) {
+            if(prevBumperLeft == HIGH) {
+                SendBumper(LEFT);
+            }
+            prevBumperLeft = bumperLeft;
+        } else {
+            prevBumperLeft = bumperLeft;
         }
-        prevPressed = pressed;
-        
+
+        bumperRight = digitalRead(BMP_SEN_RIGHT);
+        if(bumperRight == LOW) {
+            if(prevBumperRight == HIGH) {
+                SendBumper(RIGHT);
+            }
+            prevBumperRight = bumperRight;
+        } else {
+            prevBumperRight = bumperRight;
+        }
+
+        bumperRear = digitalRead(BMP_SEN_REAR);
+        if(bumperRear == LOW) {
+            if(prevBumperRear == HIGH) {
+                SendBumper(REAR);
+            }
+            prevBumperRear = bumperRear;
+        } else {
+            prevBumperRear = bumperRear;
+        }
+
         vTaskDelay(10);
     }
 

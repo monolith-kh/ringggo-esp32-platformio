@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "1.5.0"
+#define VERSION "1.5.1"
 
 #ifdef DEV
     #define WIFI_SSID       "RINGGGO-dev"
