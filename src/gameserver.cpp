@@ -179,6 +179,6 @@ void GameStop()
     ledIndex = LED_ALL;
     type = LED_ON;
     color = COLOR_WHITE;
-    ledTime = 1000;
+    ledTime = 499;
     Mp3Play(2);
 }
