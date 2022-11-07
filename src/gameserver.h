@@ -6,7 +6,7 @@
 #define SUSPEND   2
 #define RESUME    3
 
-#define GAME_PLAYTIME       180000+10000
+#define GAME_PLAYTIME       180000+3000
 #define RECONNECT_DELAY     10000
 
 #include <WiFiClient.h>
