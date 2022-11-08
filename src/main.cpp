@@ -16,7 +16,7 @@
 #include "config.h"
 
 
-xQueueHandle xQueueLed, xQueueMp3;
+xQueueHandle xQueueLed, xQueueMp3, xQueueStm;
 CRGB leds[NUM_LEDS];
 DFRobotDFPlayerMini mp3Player;
 int volume;
@@ -53,7 +53,6 @@ void setup(void)
         carNumber = GetCarNumber();
         log_i("Car Number: %d", carNumber);
     }
-    Stm32Reset();
 
 #ifdef DEV
     sprintf(hostName, "CAR_%d(%s)DEV", carNumber, VERSION);
