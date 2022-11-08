@@ -90,6 +90,10 @@ void SetEventMode(uint8_t mode)
         request.data[0] = EVENT_SUSPEND;
     } else if (mode == RESUME) {
         request.data[0] = EVENT_RESUME;
+    } else if (mode == REMOTE_ON) {
+        request.data[0] = EVENT_REMOTE_ON;
+    } else if (mode == REMOTE_OFF) {
+        request.data[0] = EVENT_REMOTE_OFF;
     } else {
         log_i("wrong activation mode");
     }
