@@ -13,6 +13,8 @@ void WifiInit()
         }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 
 
+# ifdef DEV
+# else
     IPAddress localIp(192, 168, 40, 200 + carNumber);
     IPAddress gateway(192, 168, 40, 1);
     IPAddress subnet(255, 255, 255, 0);
@@ -21,6 +23,7 @@ void WifiInit()
     if(!WiFi.config(localIp, gateway, subnet, primaryDNS, secondaryDNS)) {
         log_e("STA Failed to configure");
     }
+# endif
     WiFi.setHostname(hostName);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
