@@ -17,6 +17,7 @@
 #define PK_BUMP_NOTI                0xC7
 #define PK_ERROR_NOTI               0xC8
 #define PK_POSITION_NOTI            0xD1
+#define PK_REMOTE_SET               0xE1
 
 #pragma pack(1)
 typedef struct Protocol_t {
@@ -73,6 +74,12 @@ typedef struct Protocol_position_t {
     int16_t accY;
     int16_t headAngle;
 } Protocol_position_t;
+
+#pragma pack(1)
+typedef struct {
+    uint16_t right_rpm;
+    uint16_t left_rpm;
+} Protocol_remote_t;
 
 typedef enum Sender {
     GAME_SERVER = 3,

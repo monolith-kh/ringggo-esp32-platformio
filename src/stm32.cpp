@@ -97,6 +97,20 @@ void SetEventMode(uint8_t mode)
     xQueueSendToFront(xQueueStm, &request, FETCH_UWB_DELAY);
 }
 
+int SetRemote(uint16_t right_rpm, uint16_t left_rpm)
+{
+    spi_data_remote remote_data;
+    remote_data.right_rpm = right_rpm;
+    remote_data.left_rpm = left_rpm;
+
+    spi_request request;
+    request.command = SPI_CMD_REMOTE_SET;
+    request.size = sizeof(remote_data);
+    memcpy(request.data, &remote_data, sizeof(remote_data));
+
+    return xQueueSendToFront(xQueueStm, &request, FETCH_UWB_DELAY);
+}
+
 void Stm32Init()
 {
     xQueueStm = xQueueCreate(10, sizeof(spi_request));

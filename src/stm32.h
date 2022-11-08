@@ -95,8 +95,8 @@ typedef struct {
 
 #pragma pack(1)
 typedef struct {
-    uint16_t rpm_right;
-    uint16_t rpm_left;
+    uint16_t right_rpm;
+    uint16_t left_rpm;
 } spi_data_remote;
 
 
@@ -108,5 +108,6 @@ uint8_t GetCarNumber();
 void SetEventMode(uint8_t mode);
 void Stm32Init();
 void Stm32Task(void* parameter);
+int SetRemote(uint16_t right_rpm, uint16_t left_rpm);
 
 #endif
