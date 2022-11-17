@@ -140,18 +140,20 @@ void Stm32Task(void* parameter)
         spiStm32Command(vspi, SPI_CMD_LOCATION_GET, data, 0, &response);
         spi_response_data_location* location = (spi_response_data_location*) response.data;
 
-        rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
-        Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 26, carNumber, 0, };
-        t = millis();
-        protocol.timestamp = (int64_t)t;
-        protocol.positionX = location->pos_x;
-        protocol.positionY = location->pos_y;
-        protocol.accX= location->acc_x;
-        protocol.accY= location->acc_y;
-        protocol.headAngle = location->head_angle;
-        rtlsClient.write((uint8_t *)&protocol, sizeof(protocol));
-        rtlsClient.endPacket();
-        log_d("done send data to rtls server");
+        if(location->pos_x && location->pos_y) {
+            rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
+            Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 26, carNumber, 0, };
+            t = millis();
+            protocol.timestamp = (int64_t)t;
+            protocol.positionX = location->pos_x;
+            protocol.positionY = location->pos_y;
+            protocol.accX= location->acc_x;
+            protocol.accY= location->acc_y;
+            protocol.headAngle = location->head_angle;
+            rtlsClient.write((uint8_t *)&protocol, sizeof(protocol));
+            rtlsClient.endPacket();
+            log_d("done send data to rtls server");
+        }
 
         vTaskDelay(FETCH_UWB_DELAY);
     }
