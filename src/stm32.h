@@ -80,9 +80,9 @@ typedef struct {
 typedef struct {
     uint16_t pos_x;
     uint16_t pos_y;
+    uint16_t head_angle;
     uint16_t acc_x;
     uint16_t acc_y;
-    uint16_t head_angle;
 } spi_response_data_location;
 
 
