@@ -90,6 +90,22 @@ void SetEventMode(uint8_t mode)
 }
 
 
+void SetRemote(uint16_t rightRpm, uint16_t leftRpm)
+{
+    uint8_t data[SPI_MAX_DATASIZE] = {0, };
+    spi_response response;
+
+    data[0] = 0xffff;
+    data[1] = 0x0000;
+    data[2] = 0xffff;
+    data[3] = 0x0000;
+
+    spiStm32Command(vspi, SPI_CMD_REMOTE_SET, data, 4, &response);
+    spi_response_data_remote* remote = (spi_response_data_remote*) response.data;
+    log_i("remote data: %d, %d", remote->right_rpm, remote->left_rpm);
+}
+
+
 void Stm32Init()
 {
     //initialise two instances of the SPIClass attached to VSPI and HSPI respectively

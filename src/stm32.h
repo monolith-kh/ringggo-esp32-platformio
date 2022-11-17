@@ -68,6 +68,12 @@ typedef struct {
 
 #pragma pack(1)
 typedef struct {
+    uint16_t right_rpm;
+    uint16_t left_rpm;
+} spi_response_data_remote;
+
+#pragma pack(1)
+typedef struct {
     uint8_t carnumber;
 } spi_response_data_carnumber;
 
@@ -93,6 +99,7 @@ uint8_t spiCommand(SPIClass *spi, byte data);
 void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_size, spi_response* response);
 uint8_t GetCarNumber();
 void SetEventMode(uint8_t mode);
+void SetRemote(uint16_t rightRpm, uint16_t leftRpm);
 void Stm32Init();
 void Stm32Reset();
 void Stm32Task(void* parameter);
