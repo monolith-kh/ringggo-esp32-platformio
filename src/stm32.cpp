@@ -142,7 +142,7 @@ void Stm32Task(void* parameter)
 
         if(location->pos_x && location->pos_y) {
             rtlsClient.beginPacket(RTLS_HOST, RTLS_PORT);
-            Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 26, carNumber, 0, };
+            Protocol_position_t protocol = { PK_POSITION_NOTI, CAR, 8+18, carNumber, 0, };
             t = millis();
             protocol.timestamp = (int64_t)t;
             protocol.positionX = location->pos_x;

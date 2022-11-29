@@ -45,7 +45,6 @@ void GameServerInit()
   log_i("connected GameServer");
   gameClient.setNoDelay(true);
 
-
   log_i("try to handshake");
   uint8_t packetHeader[8] = { 0, };
   uint8_t packetBody[8] = { 0, };
@@ -136,14 +135,14 @@ void GameServerTask(void* parameter)
 
 void SendBattery(uint8_t percentage)
 {
-    Protocol_bt protocol = {PK_BATTERY_NOTI, CAR, 8, carNumber, 0, percentage};
+    Protocol_bt protocol = {PK_BATTERY_NOTI, CAR, 8+1, carNumber, 0, percentage};
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send battery: %d%", percentage);
 }
 
 void SendNfc(char wrbId[], uint8_t uid[])
 {
-    Protocol_nfct protocol = {PK_NFC_NOTI, CAR, 8, carNumber, 0,};
+    Protocol_nfct protocol = {PK_NFC_NOTI, CAR, 8+21, carNumber, 0,};
     memcpy(protocol.wrbId, wrbId, 13);
     protocol.sep = ',';
     memcpy(protocol.uid, uid, 7);
@@ -153,7 +152,7 @@ void SendNfc(char wrbId[], uint8_t uid[])
 
 void SendBumper(int bumper)
 {
-    Protocol_bumpert protocol = {PK_BUMP_NOTI, CAR, 8, carNumber, 0, (uint8_t)bumper};
+    Protocol_bumpert protocol = {PK_BUMP_NOTI, CAR, 8+1, carNumber, 0, (uint8_t)bumper};
     gameClient.write((const uint8_t *)&protocol, sizeof(protocol));
     log_i("send bumper: 0x%x", bumper);
 }
