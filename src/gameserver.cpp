@@ -123,6 +123,15 @@ void GameServerTask(void* parameter)
             inGame = false;
           }
           SetEventMode(packetBody[0]);
+        } else if (packetHeader[0] == PK_REMOTE_SET) {
+          gameClient.readBytes(packetBody, 4);
+          log_i("remote set received: %d, %d, %d, %d", packetBody[0], packetBody[1], packetBody[2], packetBody[3]);
+          Protocol_remote_t* remote_data = (Protocol_remote_t*) packetBody;
+          xStatus = SetRemote(remote_data->right_rpm, remote_data->left_rpm);
+          if(xStatus == pdPASS)
+          {
+              log_i("stm queue send");
+          }
         } else {
           log_i("invalid req code");
         }

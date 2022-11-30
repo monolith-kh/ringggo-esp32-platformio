@@ -1,6 +1,11 @@
 #include "stm32.h"
 
 
+uint8_t spiCommand(SPIClass *spi, byte data);
+void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_size, spi_response* response);
+void Stm32Reset();
+
+
 uint8_t spiCommand(SPIClass *spi, byte data) {
     uint8_t ret = 0;
     //use it as you would the regular arduino SPI API
@@ -53,7 +58,6 @@ void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_siz
     }
 }
 
-
 uint8_t GetCarNumber()
 {
     uint8_t data[SPI_MAX_DATASIZE] = {0, };
@@ -66,40 +70,63 @@ uint8_t GetCarNumber()
     return car_number->carnumber;
 }
 
+void SetEventModeCallback(spi_response* response)
+{
+    spi_response_data_event* event = (spi_response_data_event*) response->data;
+    log_i("event data: %d, %d", event->event, event->event_data);
+}
 
 void SetEventMode(uint8_t mode)
 {
-    uint8_t data[SPI_MAX_DATASIZE] = {0, };
-    spi_response response;
+    spi_request request;
 
+    request.command = SPI_CMD_EVENT;
+    request.size = 1;
     if (mode == STOP) {
-        data[0] = EVENT_MANUAL_OFF;
+        request.data[0] = EVENT_MANUAL_OFF;
     } else if (mode ==START) {
-        data[0] = EVENT_MANUAL_ON;
+        request.data[0] = EVENT_MANUAL_ON;
     } else if (mode == SUSPEND) {
-        data[0] = EVENT_SUSPEND;
+        request.data[0] = EVENT_SUSPEND;
     } else if (mode == RESUME) {
-        data[0] = EVENT_RESUME;
+        request.data[0] = EVENT_RESUME;
+    } else if (mode == REMOTE_ON) {
+        request.data[0] = EVENT_REMOTE_ON;
+    } else if (mode == REMOTE_OFF) {
+        request.data[0] = EVENT_REMOTE_OFF;
     } else {
         log_i("wrong activation mode");
     }
 
-    spiStm32Command(vspi, SPI_CMD_EVENT, data, 1, &response);
-    spi_response_data_event* event = (spi_response_data_event*) response.data;
-    log_i("event data: %d, %d", event->event, event->event_data);
+    xQueueSendToFront(xQueueStm, &request, FETCH_UWB_DELAY);
 }
 
+int SetRemote(uint16_t right_rpm, uint16_t left_rpm)
+{
+    spi_data_remote remote_data;
+    remote_data.right_rpm = right_rpm;
+    remote_data.left_rpm = left_rpm;
+
+    spi_request request;
+    request.command = SPI_CMD_REMOTE_SET;
+    request.size = sizeof(remote_data);
+    memcpy(request.data, &remote_data, sizeof(remote_data));
+
+    return xQueueSendToFront(xQueueStm, &request, FETCH_UWB_DELAY);
+}
 
 void Stm32Init()
 {
+    xQueueStm = xQueueCreate(10, sizeof(spi_request));
     //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
     vspi = new SPIClass(VSPI);
 
     //clock miso mosi ss
     vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
     pinMode(VSPI_SS, OUTPUT);
-}
 
+    Stm32Reset();
+}
 
 void Stm32Reset()
 {
@@ -112,11 +139,11 @@ void Stm32Reset()
     log_i("reset data: %d", reset->reset);
 }
 
-
 void Stm32Task(void* parameter)
 {
     uint8_t data[SPI_MAX_DATASIZE] = {0, };
     spi_response response;
+    BaseType_t xStatus;
 
     time_t t;
     WiFiUDP rtlsClient;
@@ -155,7 +182,17 @@ void Stm32Task(void* parameter)
             log_d("done send data to rtls server");
         }
 
-        vTaskDelay(FETCH_UWB_DELAY);
+        spi_request request;
+        xStatus = xQueueReceive(xQueueStm, &request, FETCH_UWB_DELAY);
+        if (xStatus == pdPASS)
+        {
+            log_i("stm squeue exist");
+            spiStm32Command(vspi, request.command, request.data, request.size, &response);
+            if (request.callback != NULL)
+            {
+                request.callback(&response);
+            }
+        }
     }
 
     vTaskDelete(NULL);

@@ -56,6 +56,14 @@ typedef struct {
 
 #pragma pack(1)
 typedef struct {
+    uint8_t command;
+    uint8_t size;
+    uint8_t data[SPI_MAX_DATASIZE] = {0, };
+    void (*callback)(spi_response*) = NULL;
+} spi_request;
+
+#pragma pack(1)
+typedef struct {
     uint8_t status;
     uint8_t status_data;
 } spi_response_data_status;
@@ -85,16 +93,21 @@ typedef struct {
     uint16_t acc_y;
 } spi_response_data_location;
 
+#pragma pack(1)
+typedef struct {
+    uint16_t right_rpm;
+    uint16_t left_rpm;
+} spi_data_remote;
+
 
 extern SPIClass* vspi;
 extern uint8_t carNumber;
+extern xQueueHandle xQueueStm;
 
-uint8_t spiCommand(SPIClass *spi, byte data);
-void spiStm32Command(SPIClass *spi, uint8_t cmd, uint8_t* data, uint8_t data_size, spi_response* response);
 uint8_t GetCarNumber();
 void SetEventMode(uint8_t mode);
 void Stm32Init();
-void Stm32Reset();
 void Stm32Task(void* parameter);
+int SetRemote(uint16_t right_rpm, uint16_t left_rpm);
 
 #endif

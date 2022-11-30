@@ -5,6 +5,8 @@
 #define START     1
 #define SUSPEND   2
 #define RESUME    3
+#define REMOTE_ON 4
+#define REMOTE_OFF  5
 
 #define GAME_PLAYTIME       180000+3000
 #define RECONNECT_DELAY     10000
